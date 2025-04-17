@@ -8,6 +8,7 @@ namespace DVUnencryptedSaves
 	public class Main
 	{
 		public static UnityModManager.ModEntry _modEntry;
+	
 		
 		private static bool Load(UnityModManager.ModEntry modEntry)
 		{
