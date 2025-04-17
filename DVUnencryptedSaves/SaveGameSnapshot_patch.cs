@@ -16,6 +16,7 @@ namespace DVUnencryptedSaves
 		[HarmonyPrefix]
 		public static bool LoadData_Prefix(SaveGameSnapshot __instance)
 		{
+			if (!Main.Settings.LoadFromJSON) return true;
 			try
 			{
 				string basePath = SingletonBehaviour<UserManager>.Instance.Storage.GetFilesystemPath(SingletonBehaviour<UserManager>.Instance.CurrentUser.CurrentSession.LatestSave.BasePath);

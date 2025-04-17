@@ -1,6 +1,8 @@
 using System;
 using System.Reflection;
+using DV.Utils;
 using HarmonyLib;
+using UnityEngine;
 using UnityModManagerNet;
 
 namespace DVUnencryptedSaves
@@ -8,8 +10,16 @@ namespace DVUnencryptedSaves
 	public class Main
 	{
 		public static UnityModManager.ModEntry _modEntry;
-	
-		
+		public static Settings Settings { get; private set; }
+		private static void OnSaveGUI(UnityModManager.ModEntry modEntry)
+		{
+			Settings.Save(modEntry);
+		}
+		private static void OnGUI(UnityModManager.ModEntry modEntry)
+		{
+			Settings.Draw(modEntry);
+		}
+
 		private static bool Load(UnityModManager.ModEntry modEntry)
 		{
 			Harmony? harmony = null;
