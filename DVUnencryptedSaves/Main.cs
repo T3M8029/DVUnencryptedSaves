@@ -7,7 +7,7 @@ using UnityModManagerNet;
 
 namespace DVUnencryptedSaves
 {
-	public class Main
+	public static class Main
 	{
 		public static UnityModManager.ModEntry _modEntry;
 		public static Settings Settings { get; private set; }
@@ -22,7 +22,10 @@ namespace DVUnencryptedSaves
 
 		private static bool Load(UnityModManager.ModEntry modEntry)
 		{
+			Settings = Settings.Load<Settings>(modEntry);
 			Harmony? harmony = null;
+			modEntry.OnGUI = OnGUI;
+			modEntry.OnSaveGUI = OnSaveGUI;
 			_modEntry = modEntry;
 			try
 			{
