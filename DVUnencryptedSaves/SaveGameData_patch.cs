@@ -17,13 +17,16 @@ namespace DVUnencryptedSaves
 		[HarmonyPostfix]
 		public static void SaveToFile_Postfix(SaveGameData data, string path)
 		{
-			string jsonString = data.GetJsonString();
-			JObject jsonObj = JObject.Parse(jsonString);
-			string formattedJson = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
-			path = Path.ChangeExtension(path, ".json");
-			Main._modEntry.Logger.Log("Output file path is: "+path);
-			//Main._modEntry.Logger.Log(formattedJson);
-			File.WriteAllText(path, formattedJson);
+			if (Main.Settings.SaveJSON)
+			{
+				string jsonString = data.GetJsonString();
+				JObject jsonObj = JObject.Parse(jsonString);
+				string formattedJson = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
+				path = Path.ChangeExtension(path, ".json");
+				Main._modEntry.Logger.Log("Output file path is: " + path);
+				//Main._modEntry.Logger.Log(formattedJson);
+				File.WriteAllText(path, formattedJson);
+			}
 		}
 	}
 }

@@ -16,10 +16,13 @@ namespace DVUnencryptedSaves
 		[HarmonyPostfix]
 		public static void Save_Postfix(ISaveGame __result)
 		{
-			User currentUser = SingletonBehaviour<UserManager>.Instance.CurrentUser;
-			string path = Path.Combine(Path.GetDirectoryName(SingletonBehaviour<UserManager>.Instance.Storage.GetFilesystemPath(currentUser.CurrentSession.LatestSave.BasePath)), Path.GetFileName(__result.BasePath));
-			Main._modEntry.Logger.Log("Game is saving, running modified method with input of path: " + path);
-			SaveGameManager.Instance.SaveCurrentDataEncrypted(path);
+			if (Main.Settings.SaveJSON)
+			{
+				User currentUser = SingletonBehaviour<UserManager>.Instance.CurrentUser;
+				string path = Path.Combine(Path.GetDirectoryName(SingletonBehaviour<UserManager>.Instance.Storage.GetFilesystemPath(currentUser.CurrentSession.LatestSave.BasePath)), Path.GetFileName(__result.BasePath));
+				Main._modEntry.Logger.Log("Game is saving, running modified method with input of path: " + path);
+				SaveGameManager.Instance.SaveCurrentDataEncrypted(path);
+			}
 		}
 	}
 }
