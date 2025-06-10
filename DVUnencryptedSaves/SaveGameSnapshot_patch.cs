@@ -13,7 +13,7 @@ namespace DVUnencryptedSaves
 	[HarmonyPatch]
 	public static class SaveGameSnapshot_patch
 	{
-		private static FieldInfo _dataBackingField = AccessTools.Field(typeof(SaveGameSnapshot), "<Data>k__BackingField");
+		private static readonly FieldInfo _dataBackingField = AccessTools.Field(typeof(SaveGameSnapshot), "<Data>k__BackingField");
 
 		[HarmonyPatch(typeof(SaveGameSnapshot), "LoadData")]
 		[HarmonyPrefix]
@@ -27,8 +27,7 @@ namespace DVUnencryptedSaves
 			}
 			try
 			{
-				ISaveGame saveGame = __instance as ISaveGame;
-				if (saveGame == null || string.IsNullOrEmpty(saveGame.BasePath))
+				if (__instance is not ISaveGame saveGame || string.IsNullOrEmpty(saveGame.BasePath))
 				{
 					Main._modEntry.Logger.Warning("LoadData_Prefix: Could not get BasePath from the provided SaveGameSnapshot instance. Letting original LoadData run.");
 					return true;
@@ -79,6 +78,38 @@ namespace DVUnencryptedSaves
 			{
 				Main._modEntry.Logger.Error($"Exception in LoadData_Prefix while processing '{__instance?.GetType().Name}': {ex}");
 				return true;
+			}
+		}
+
+		[HarmonyPatch(typeof(SaveGameSnapshot), "DeleteData", MethodType.Normal)]
+		[HarmonyPostfix]
+		public static void DeleteData_Postfix(SaveGameSnapshot __instance)
+		{
+			try
+			{
+				var um = SingletonBehaviour<UserManager>.Instance;
+				if (um == null || um.Storage == null)
+				{
+					Main._modEntry.Logger.Error("DeleteData_Postfix: Could not get UserManager or its Storage provider. Cannot delete corresponding .json file.");
+					return;
+				}
+
+				if (string.IsNullOrEmpty(__instance.BasePath)) return;
+
+				string absoluteBasePath = um.Storage.GetFilesystemPath(__instance.BasePath);
+				if (string.IsNullOrEmpty(absoluteBasePath)) return;
+
+				string jsonPath = Path.ChangeExtension(absoluteBasePath, ".json");
+
+				if (File.Exists(jsonPath))
+				{
+					File.Delete(jsonPath);
+					Main._modEntry.Logger.Log($"Deleted corresponding unencrypted save file: {jsonPath}");
+				}
+			}
+			catch (System.Exception ex)
+			{
+				Main._modEntry.Logger.Error($"Exception in DeleteData_Postfix: {ex}");
 			}
 		}
 	}
