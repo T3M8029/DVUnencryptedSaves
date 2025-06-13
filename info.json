@@ -1,6 +1,6 @@
 {
 	"Id": "DVUnencryptedSaves",
-	"Version": "1.1.0",
+	"Version": "1.1.3",
 	"DisplayName": "DVUnencryptedSaves",
 	"Author": "8029",
 	"EntryMethod": "DVUnencryptedSaves.Main.Load",
